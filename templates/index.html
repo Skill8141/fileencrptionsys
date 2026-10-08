@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cipher·vault · encrypt & decrypt</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="glow-orb glow-orb-3"></div>
+
+    <header class="hero">
+      <h1>
+        <span class="lock-icon">🔐</span>
+        cipher<span class="accent">·vault</span>
+        <span class="badge">AES‑256</span>
+      </h1>
+      <p class="subhead">
+        encrypt & decrypt files — powered by your Flask backend
+      </p>
+    </header>
+
+    <main class="grid">
+      <!-- ============ ENCRYPT CARD ============ -->
+      <section class="card" id="encryptCard">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-emoji">🔒</span>
+            <h2>Encrypt</h2>
+          </div>
+          <span class="badge badge-soft">AES‑256‑GCM</span>
+        </div>
+
+        <!-- File Drop Zone -->
+        <div class="file-area" id="encryptFileArea">
+          <input type="file" id="encryptFileInput" accept="*/*" />
+          <label for="encryptFileInput" class="file-label">
+            <span class="file-icon">📁</span>
+            <strong>Drop file or click to browse</strong>
+            <small id="encryptFileName">no file selected</small>
+          </label>
+        </div>
+
+        <!-- Key Input -->
+        <div class="key-area">
+          <label for="encryptKey">🔑 Encryption key</label>
+          <div class="key-input-wrapper">
+            <span class="key-icon">🗝️</span>
+            <input
+              type="password"
+              id="encryptKey"
+              placeholder="Enter secret key"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button
+              class="toggle-key"
+              type="button"
+              data-target="encryptKey"
+              aria-label="show/hide key"
+            >
+              👁️
+            </button>
+          </div>
+          <div class="error-msg" id="encryptError"></div>
+        </div>
+
+        <!-- Action -->
+        <div class="action-row">
+          <button class="btn btn-primary" id="encryptBtn" disabled>
+            <span class="btn-icon">⚡</span>
+            <span class="btn-text">Encrypt & Preview</span>
+            <span class="spinner" hidden></span>
+          </button>
+        </div>
+
+        <!-- Preview + Download -->
+        <div class="preview-section">
+          <div class="preview-header">
+            <span>📋 Encrypted preview</span>
+            <span class="preview-tag" id="encryptPreviewTag">base64</span>
+          </div>
+          <div class="preview-box empty-state" id="encryptPreview">
+            encrypted data will appear here
+          </div>
+          <button class="btn download-btn" id="encryptDownloadBtn" disabled>
+            <span>⬇</span> Download .enc file
+          </button>
+          <div class="small-note">
+            keep your key safe — required for decryption
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DECRYPT CARD ============ -->
+      <section class="card" id="decryptCard">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-emoji">🔓</span>
+            <h2>Decrypt</h2>
+          </div>
+          <span class="badge badge-soft">AES‑256‑GCM</span>
+        </div>
+
+        <!-- File Drop Zone -->
+        <div class="file-area" id="decryptFileArea">
+          <input
+            type="file"
+            id="decryptFileInput"
+            accept=".enc,.json,application/json"
+          />
+          <label for="decryptFileInput" class="file-label">
+            <span class="file-icon">📁</span>
+            <strong>Drop .enc file or click to browse</strong>
+            <small id="decryptFileName">no file selected</small>
+          </label>
+        </div>
+
+        <!-- Key Input -->
+        <div class="key-area">
+          <label for="decryptKey">🔑 Decryption key</label>
+          <div class="key-input-wrapper">
+            <span class="key-icon">🗝️</span>
+            <input
+              type="password"
+              id="decryptKey"
+              placeholder="Enter secret key"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button
+              class="toggle-key"
+              type="button"
+              data-target="decryptKey"
+              aria-label="show/hide key"
+            >
+              👁️
+            </button>
+          </div>
+          <div class="error-msg" id="decryptError"></div>
+        </div>
+
+        <!-- Action -->
+        <div class="action-row">
+          <button class="btn btn-primary" id="decryptBtn" disabled>
+            <span class="btn-icon">⚡</span>
+            <span class="btn-text">Decrypt & Preview</span>
+            <span class="spinner" hidden></span>
+          </button>
+        </div>
+
+        <!-- Preview + Download -->
+        <div class="preview-section">
+          <div class="preview-header">
+            <span>📋 Decrypted preview</span>
+            <span class="preview-tag" id="decryptPreviewTag">text</span>
+          </div>
+          <div class="preview-box empty-state" id="decryptPreview">
+            decrypted content will appear here
+          </div>
+          <button class="btn download-btn" id="decryptDownloadBtn" disabled>
+            <span>⬇</span> Download decrypted file
+          </button>
+          <div class="small-note">original file restored</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span
+        >🔐 secured by your Flask backend — files never leave your control</span
+      >
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
