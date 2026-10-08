@@ -16,18 +16,28 @@ def encrypt_file(file_data, key):
     # Create AES-GCM cipher
     aesgcm = AESGCM(key)
 
-    # Encrypt the file
-    encrypted_data = aesgcm.encrypt(nonce, file_data, None)
+    # Encrypt data.
+    # AES-GCM automatically adds the authentication tag.
+    ciphertext = aesgcm.encrypt(nonce, file_data, None)
 
-    return nonce, encrypted_data
+    # Store nonce + ciphertext
+    encrypted_file = nonce + ciphertext
+
+    return encrypted_file
 
 
-def decrypt_file(encrypted_data, key, nonce):
-    """Decrypt and authenticate the encrypted file."""
+def decrypt_file(encrypted_file, key):
+    """Decrypt and authenticate an encrypted file."""
+
+    # First 12 bytes are the nonce
+    nonce = encrypted_file[:12]
+
+    # Remaining bytes contain ciphertext + authentication tag
+    ciphertext = encrypted_file[12:]
 
     aesgcm = AESGCM(key)
 
-    # If the file was modified, this will raise an exception
-    decrypted_data = aesgcm.decrypt(nonce, encrypted_data, None)
+    # This also verifies the authentication tag
+    plaintext = aesgcm.decrypt(nonce, ciphertext, None)
 
-    return decrypted_data
+    return plaintext

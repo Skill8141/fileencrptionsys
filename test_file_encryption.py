@@ -1,44 +1,33 @@
 from encryption.crypto import generate_key, encrypt_file, decrypt_file
 
-# -----------------------------------
-# READ ORIGINAL FILE
-# -----------------------------------
-
+# Read original file
 with open("test_files/secret.txt", "rb") as file:
     original_data = file.read()
 
 print("Original file read successfully.")
 
 
-# -----------------------------------
-# GENERATE KEY
-# -----------------------------------
-
+# Generate key
 key = generate_key()
 
 print("AES-256 key generated.")
+print("Key:", key.hex())
 
 
-# -----------------------------------
-# ENCRYPT FILE
-# -----------------------------------
-
-nonce, encrypted_data = encrypt_file(original_data, key)
+# Encrypt
+encrypted_file = encrypt_file(original_data, key)
 
 with open("test_files/secret.enc", "wb") as file:
-    file.write(encrypted_data)
+    file.write(encrypted_file)
 
 print("File encrypted successfully.")
 
 
-# -----------------------------------
-# DECRYPT FILE
-# -----------------------------------
-
+# Decrypt
 with open("test_files/secret.enc", "rb") as file:
-    encrypted_data = file.read()
+    encrypted_file = file.read()
 
-decrypted_data = decrypt_file(encrypted_data, key, nonce)
+decrypted_data = decrypt_file(encrypted_file, key)
 
 with open("test_files/secret_decrypted.txt", "wb") as file:
     file.write(decrypted_data)
@@ -46,10 +35,7 @@ with open("test_files/secret_decrypted.txt", "wb") as file:
 print("File decrypted successfully.")
 
 
-# -----------------------------------
-# VERIFY
-# -----------------------------------
-
+# Verify
 if original_data == decrypted_data:
     print("SUCCESS: Files are identical!")
 else:
