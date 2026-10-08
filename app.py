@@ -12,6 +12,11 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/how-it-works")
+def how_it_works():
+    return render_template("how_it_works.html")
+
+
 # -------------------------
 # Encrypt File
 # -------------------------

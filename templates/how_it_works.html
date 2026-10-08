@@ -1,0 +1,1587 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How it works · Authenticated File Encryption System</title>
+    <style>
+      /* ---------- GLOBAL DARK CYBERSECURITY THEME ---------- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #0b0f1a;
+        font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+        color: #e3e9f2;
+        line-height: 1.5;
+        scroll-behavior: smooth;
+        padding: 0 1.5rem 4rem 1.5rem;
+      }
+
+      /* ---------- TYPOGRAPHY & COLORS ---------- */
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
+
+      h1 {
+        font-size: 3.2rem;
+        background: linear-gradient(135deg, #a0e7ff, #4f9eff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      h2 {
+        font-size: 2rem;
+        margin: 2.2rem 0 1.2rem;
+        border-left: 5px solid #2f8cff;
+        padding-left: 1.2rem;
+        color: #c6e2ff;
+      }
+
+      h3 {
+        font-size: 1.4rem;
+        margin: 1.6rem 0 1rem;
+        color: #a3d0ff;
+      }
+
+      a {
+        color: #63b3ff;
+        text-decoration: none;
+      }
+
+      /* ---------- GLASSMORPHISM CARDS ---------- */
+      .glass {
+        background: rgba(18, 28, 46, 0.65);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(70, 130, 200, 0.25);
+        border-radius: 28px;
+        padding: 1.8rem 2rem;
+        box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.6);
+        transition:
+          transform 0.15s ease,
+          border-color 0.2s;
+      }
+
+      .glass:hover {
+        border-color: rgba(80, 160, 255, 0.6);
+      }
+
+      /* ---------- STICKY NAV / SIDEBAR (mobile friendly) ---------- */
+      .top-nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(8, 14, 26, 0.85);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid #1e3450;
+        margin: 0 -1.5rem 2rem -1.5rem;
+        padding: 0.8rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .progress-container {
+        flex: 1;
+        min-width: 200px;
+        height: 6px;
+        background: #1e2e44;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #2f8cff, #a0e7ff);
+        transition: width 0.2s;
+      }
+
+      .back-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: #1a2c4a;
+        border: 1px solid #2f6eb0;
+        color: #b0d4ff;
+        border-radius: 40px;
+        padding: 0.8rem 1.4rem;
+        font-weight: 600;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 10px 25px -5px #00000080;
+        transition: all 0.2s;
+        z-index: 99;
+      }
+
+      .back-top:hover {
+        background: #254a78;
+        border-color: #5b9eff;
+      }
+
+      /* ---------- HERO ---------- */
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 3rem 1rem 2rem;
+      }
+
+      .hero-badge-container {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 1.8rem 0 1rem;
+      }
+
+      .badge {
+        background: #132338;
+        border: 1px solid #2f6eb0;
+        border-radius: 40px;
+        padding: 0.4rem 1.2rem;
+        font-size: 0.9rem;
+        color: #aad0ff;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+      }
+
+      .hero-flow {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0.8rem;
+        font-family: "Fira Code", monospace;
+        background: #0d1626;
+        padding: 1.5rem 2rem;
+        border-radius: 80px;
+        margin: 2rem 0 0.5rem;
+        border: 1px solid #1f3a5e;
+        font-size: 0.95rem;
+        color: #b8d4ff;
+      }
+
+      .flow-arrow {
+        color: #3f7ecc;
+        font-size: 1.5rem;
+        animation: pulseArrow 2s infinite;
+      }
+
+      @keyframes pulseArrow {
+        0%,
+        100% {
+          opacity: 0.5;
+          transform: translateX(0);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(5px);
+        }
+      }
+
+      /* ---------- DIAGRAM BLOCKS ---------- */
+      .diagram {
+        font-family: "Fira Code", "Courier New", monospace;
+        background: #0b1422;
+        padding: 1.5rem;
+        border-radius: 20px;
+        border: 1px solid #1e3858;
+        overflow-x: auto;
+        white-space: pre;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        color: #bbd9ff;
+      }
+
+      .inline-code {
+        font-family: "Fira Code", monospace;
+        background: #132338;
+        padding: 0.2rem 0.6rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #9ac8ff;
+      }
+
+      .code-block {
+        background: #0b1422;
+        border: 1px solid #1d3450;
+        border-radius: 16px;
+        padding: 1.4rem;
+        font-family: "Fira Code", monospace;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 0.9rem;
+        color: #b8daff;
+      }
+
+      /* ---------- INTERACTIVE COMPONENTS ---------- */
+      .btn {
+        background: #1a2e4a;
+        border: 1px solid #3268a8;
+        color: #dbecff;
+        padding: 0.6rem 1.4rem;
+        border-radius: 40px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: inherit;
+        font-size: 0.95rem;
+      }
+
+      .btn:hover {
+        background: #25456e;
+        border-color: #5b9eff;
+        transform: scale(1.02);
+      }
+
+      .btn-primary {
+        background: #1f4d8c;
+        border-color: #4f9eff;
+        color: white;
+      }
+
+      .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        margin: 1.2rem 0;
+      }
+
+      .step-container {
+        background: #0d1a2c;
+        border-radius: 20px;
+        padding: 1.8rem;
+        margin: 1.5rem 0;
+        border: 1px solid #244468;
+        transition: all 0.3s;
+      }
+
+      .step-indicator {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+      }
+
+      .step-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #16283f;
+        border: 1px solid #2e517b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        color: #9bbce6;
+      }
+
+      .step-dot.active {
+        background: #1f5eb0;
+        border-color: #89c2ff;
+        color: white;
+        box-shadow: 0 0 15px #2f8cff;
+      }
+
+      /* Tamper slider */
+      .tamper-demo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+      }
+
+      .cipher-display {
+        font-family: "Fira Code", monospace;
+        background: #09111e;
+        padding: 1rem 1.8rem;
+        border-radius: 60px;
+        letter-spacing: 1px;
+        border: 1px solid #1f3f62;
+        font-size: 1.2rem;
+      }
+
+      .verdict {
+        font-weight: 600;
+        padding: 0.8rem 2rem;
+        border-radius: 40px;
+        display: inline-block;
+      }
+
+      .verdict.success {
+        background: #0b3b2e;
+        color: #7dffb0;
+        border: 1px solid #1f9e6e;
+      }
+
+      .verdict.fail {
+        background: #4a1418;
+        color: #ff8b8b;
+        border: 1px solid #b33b3b;
+      }
+
+      /* Expandable glossary / viva */
+      .expand-item {
+        border-bottom: 1px solid #1f3450;
+        padding: 0.5rem 0;
+      }
+
+      .expand-question {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 500;
+        color: #b8d6ff;
+        padding: 0.8rem 0;
+      }
+
+      .expand-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.25s ease-out;
+        padding-left: 1rem;
+        color: #bfd9ff;
+        font-size: 0.95rem;
+        border-left: 3px solid #2c5a96;
+        margin-left: 0.5rem;
+      }
+
+      .expand-answer.show {
+        max-height: 500px;
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.8rem;
+      }
+
+      /* JSON field highlighting */
+      .json-field {
+        cursor: pointer;
+        padding: 0.2rem 0.5rem;
+        border-radius: 8px;
+        transition: background 0.15s;
+        display: inline-block;
+      }
+
+      .json-field:hover {
+        background: #1d3b60;
+      }
+
+      .field-explanation {
+        margin-top: 1rem;
+        background: #0e1e32;
+        padding: 0.8rem 1.2rem;
+        border-radius: 14px;
+        border-left: 5px solid #3f8eff;
+        font-size: 0.95rem;
+      }
+
+      /* Security model table */
+      .sec-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.2rem 0;
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .sec-table th,
+      .sec-table td {
+        padding: 1rem 1.2rem;
+        text-align: left;
+        border-bottom: 1px solid #1e3858;
+      }
+
+      .sec-table th {
+        background: #102438;
+        color: #c6e2ff;
+      }
+
+      .sec-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      /* AES rounds visualization */
+      .round-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin: 1.5rem 0;
+      }
+
+      .round-box {
+        background: #11253d;
+        border: 1px solid #2e5a8a;
+        border-radius: 16px;
+        padding: 0.8rem 1.2rem;
+        text-align: center;
+        min-width: 100px;
+        transition: all 0.3s;
+      }
+
+      .round-box.active {
+        background: #1f4d8c;
+        border-color: #89c2ff;
+        box-shadow: 0 0 20px #2f8cff60;
+        transform: scale(1.05);
+      }
+
+      .round-box small {
+        display: block;
+        color: #9bbce6;
+        font-size: 0.75rem;
+        margin-top: 0.3rem;
+      }
+
+      .byte-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        max-width: 280px;
+        margin: 1rem auto;
+      }
+
+      .byte-cell {
+        background: #0d1a2c;
+        border: 1px solid #2a4a70;
+        border-radius: 6px;
+        padding: 0.4rem;
+        text-align: center;
+        font-family: "Fira Code", monospace;
+        font-size: 0.8rem;
+        color: #9ac8ff;
+      }
+
+      /* responsive */
+      @media (max-width: 700px) {
+        h1 {
+          font-size: 2.2rem;
+        }
+        .glass {
+          padding: 1.2rem;
+        }
+        .hero-flow {
+          font-size: 0.75rem;
+          padding: 1rem;
+        }
+        .round-box {
+          min-width: 70px;
+          padding: 0.5rem;
+          font-size: 0.8rem;
+        }
+      }
+
+      /* salt shaker animation */
+      .shaker {
+        animation: shake 0.5s infinite alternate;
+        display: inline-block;
+      }
+
+      @keyframes shake {
+        from {
+          transform: rotate(-5deg);
+        }
+        to {
+          transform: rotate(5deg);
+        }
+      }
+
+      .highlight {
+        background: #1e3a5a;
+        border-radius: 8px;
+        padding: 0.1rem 0.4rem;
+      }
+
+      .small-note {
+        font-size: 0.85rem;
+        color: #9bb1cc;
+        margin-top: 0.5rem;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- STICKY NAV + PROGRESS -->
+    <div class="top-nav">
+      <div style="font-weight: 600; color: #aad0ff; white-space: nowrap">
+        🔐 how_it_works
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div style="font-size: 0.85rem; color: #8bb1dd">AES-256-GCM · PBKDF2</div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <h1>Authenticated File Encryption System</h1>
+      <div style="font-size: 1.3rem; color: #9bbce6; margin-top: 0.2rem">
+        How My Project Works — From Password to Encrypted File
+      </div>
+      <div class="hero-badge-container">
+        <span class="badge">AES-256-GCM</span>
+        <span class="badge">PBKDF2-HMAC-SHA256</span>
+        <span class="badge">File Encryption</span>
+        <span class="badge">Integrity & Authentication</span>
+      </div>
+      <div class="hero-flow">
+        <span>FILE</span> <span class="flow-arrow">↓</span>
+        <span>PASSWORD</span> <span class="flow-arrow">↓</span>
+        <span>PBKDF2</span> <span class="flow-arrow">↓</span>
+        <span>256-BIT KEY</span> <span class="flow-arrow">↓</span>
+        <span>AES-256-GCM</span> <span class="flow-arrow">↓</span>
+        <span>ENCRYPTED FILE</span>
+      </div>
+      <p style="max-width: 700px; margin-top: 1.5rem; color: #b0c8e5">
+        This is a standalone educational page. The actual application is a Flask
+        + Python project. Here you can explore every cryptographic step
+        interactively.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 2 : PROBLEM ========== -->
+    <section class="glass">
+      <h2>2 · What problem are we solving?</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 2rem">
+        <div style="flex: 1; min-width: 220px">
+          <div class="diagram" style="white-space: pre">
+            Normal File ↓ Anyone with access can read it
+          </div>
+          <p style="margin-top: 1rem; color: #b8d0ea">
+            Confidentiality: keep file contents secret.
+          </p>
+        </div>
+        <div style="flex: 1; min-width: 220px">
+          <div class="diagram" style="white-space: pre">
+            Original File ↓ Encryption ↓ Unreadable Ciphertext
+          </div>
+          <p style="margin-top: 1rem; color: #b8d0ea">
+            Integrity + Authentication: detect tampering.
+          </p>
+        </div>
+      </div>
+      <p style="margin-top: 1.5rem">
+        <strong style="color: #7fc2ff">Encryption ≠ Authentication.</strong>
+        Encryption hides data. Authentication proves it hasn't changed. This
+        project uses <strong>authenticated encryption</strong> (AES-GCM) to do
+        both in one step.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 3 : ARCHITECTURE ========== -->
+    <section class="glass">
+      <h2>3 · Big picture architecture</h2>
+      <div class="diagram" style="white-space: pre; font-size: 0.85rem">
+        USER │ ▼ ┌───────────────┐ │ Web Interface │ │ HTML/CSS/JS │
+        └───────┬───────┘ │ ▼ ┌───────────────┐ │ Flask Backend │ │ app.py │
+        └───────┬───────┘ │ ▼ ┌────────────────┐ │ crypto.py │ │ │ │ PBKDF2 │ │
+        AES-256-GCM │ └───────┬────────┘ │ ▼ .enc FILE
+      </div>
+      <p style="margin-top: 1rem">
+        Browser sends file + password to Flask. Flask calls
+        <span class="inline-code">crypto.py</span> which does the real
+        cryptography. Result is returned as JSON and can be downloaded as
+        <span class="inline-code">.enc</span>.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 4 : ENCRYPTION SIMULATOR ========== -->
+    <section class="glass">
+      <h2>4 · What happens when I click "Encrypt"?</h2>
+      <div class="step-container">
+        <div class="step-indicator" id="stepDots"></div>
+        <div id="stepContent" style="min-height: 200px"></div>
+        <div class="btn-group">
+          <button class="btn" id="prevStep">← Previous</button>
+          <button class="btn" id="playSteps">▶ Play</button>
+          <button class="btn" id="nextStep">Next →</button>
+          <button class="btn" id="resetSteps">↻ Reset</button>
+        </div>
+      </div>
+      <p class="small-note">
+        Each step is a simplified demo. Real project uses 600,000 PBKDF2
+        iterations and random values each time.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 5 : PBKDF2 ========== -->
+    <section class="glass">
+      <h2>5 · PBKDF2 deeply explained</h2>
+      <div class="diagram" style="white-space: pre">
+        Password + Random Salt ↓ PBKDF2 ↓ HMAC-SHA256 ↓ 600,000 iterations ↓
+        256-bit Derived Key
+      </div>
+      <p>
+        <strong>PBKDF2</strong> = Password-Based Key Derivation Function 2. It
+        takes a password and salt, then applies HMAC-SHA256 hundreds of
+        thousands of times to produce a strong key. It does <em>not</em> encrypt
+        the password – it derives a key.
+      </p>
+      <p>
+        <strong>Why not SHA-256(password)?</strong> SHA-256 is too fast, making
+        brute-force easy. PBKDF2 with many iterations makes each guess
+        expensive.
+      </p>
+      <div
+        style="
+          background: #0b1422;
+          padding: 1rem;
+          border-radius: 16px;
+          margin-top: 1rem;
+        "
+      >
+        <p>
+          🔁 <strong>Interactive metaphor:</strong>
+          <span id="iterationCounter">1</span> / 600,000 iterations … each
+          iteration mixes the password+salt again.
+        </p>
+        <div
+          style="
+            height: 8px;
+            background: #1e2e44;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+          "
+        >
+          <div
+            id="iterationBar"
+            style="height: 100%; width: 0%; background: #2f8cff"
+          ></div>
+        </div>
+        <button class="btn" style="margin-top: 12px" id="startIterDemo">
+          ▶ Show derivation load
+        </button>
+      </div>
+      <p class="small-note">
+        PBKDF2 is deliberately slow. 600,000 iterations ≈ 0.3s on a modern CPU.
+        This makes brute-force impractical.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 6 : SALT ========== -->
+    <section class="glass">
+      <h2>6 · Salt explained</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 2rem">
+        <div style="flex: 2; min-width: 260px">
+          <div class="diagram" style="white-space: pre">
+            Password = hello123 Encryption 1 Salt = ABC123 ↓ Key A Encryption 2
+            Salt = XYZ789 ↓ Key B
+          </div>
+          <p style="margin-top: 1rem">
+            Same password + different salt ⇒ completely different key. Salt is
+            random, stored <em>with</em> the ciphertext (not secret).
+          </p>
+        </div>
+        <div
+          style="
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+          "
+        >
+          <span class="shaker">🧂</span>
+        </div>
+      </div>
+      <p>
+        <strong>Why?</strong> Prevents identical passwords from producing the
+        same key (rainbow tables). It's safe to store salt publicly.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 7 : NONCE ========== -->
+    <section class="glass">
+      <h2>7 · Nonce explained</h2>
+      <div class="diagram" style="white-space: pre">
+        KEY + NONCE + PLAINTEXT ↓ AES-GCM ↓ CIPHERTEXT
+      </div>
+      <p>
+        <strong>Nonce = number used once.</strong> AES-GCM requires a unique
+        nonce per encryption. This project generates a random 12-byte nonce.
+        Reusing a nonce with the same key breaks security. Nonce is stored with
+        ciphertext, not secret.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 8 : AES-256-GCM ========== -->
+    <section class="glass">
+      <h2>8 · AES-256-GCM explained</h2>
+      <div class="diagram" style="white-space: pre">
+        ┌─────────────┐ Plaintext ──►│ │ Key ────────►│ AES-256-GCM │──►
+        Ciphertext Nonce ──────►│ │──► Authentication Tag └─────────────┘
+      </div>
+      <p>
+        <strong>AES</strong>: Advanced Encryption Standard.
+        <strong>256</strong>: key size in bits. <strong>GCM</strong>:
+        Galois/Counter Mode, which adds authentication. Authenticated encryption
+        ensures both secrecy and integrity.
+      </p>
+      <p>
+        Why better than plain AES? Plain AES doesn't detect tampering. GCM gives
+        us an authentication tag that verifies the data hasn't changed.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 8.5 : AES ALGORITHM DEEP DIVE ========== -->
+    <section class="glass" id="aes-algorithm">
+      <h2>8.5 · The AES algorithm — step by step</h2>
+      <p>
+        AES (Advanced Encryption Standard) is a
+        <strong>symmetric block cipher</strong>. That means the same key is used
+        to encrypt and decrypt. It processes data in
+        <strong>128-bit blocks</strong> (16 bytes) at a time.
+      </p>
+
+      <h3>What does "256" mean?</h3>
+      <p>
+        AES-256 uses a <strong>256-bit key</strong> (32 bytes). The key size
+        determines the number of rounds AES performs. AES-256 uses
+        <strong>14 rounds</strong> of transformation. AES-128 uses 10 rounds,
+        AES-192 uses 12 rounds. More rounds = stronger security but slightly
+        slower.
+      </p>
+
+      <h3>The four operations inside each AES round</h3>
+      <div class="round-container" id="aesRoundContainer">
+        <div class="round-box" data-round="0">
+          <strong>SubBytes</strong>
+          <small>Byte substitution (S-Box)</small>
+        </div>
+        <div class="round-box" data-round="1">
+          <strong>ShiftRows</strong>
+          <small>Row shifting</small>
+        </div>
+        <div class="round-box" data-round="2">
+          <strong>MixColumns</strong>
+          <small>Column mixing</small>
+        </div>
+        <div class="round-box" data-round="3">
+          <strong>AddRoundKey</strong>
+          <small>XOR with round key</small>
+        </div>
+      </div>
+
+      <p style="margin-top: 1rem">
+        Each round applies these four operations to a 4×4 matrix of bytes called
+        the <strong>state</strong>. The final round skips MixColumns. AES-256
+        repeats this 14 times, each time with a different
+        <strong>round key</strong> derived from the original 256-bit key.
+      </p>
+
+      <h3>Interactive: the state matrix</h3>
+      <p>
+        Below is a simplified 4×4 state (16 bytes). Click "Run one round" to see
+        how bytes get shuffled. This is a <em>simplified visual</em> — real AES
+        uses complex S-Box substitutions and Galois field math.
+      </p>
+      <div class="byte-grid" id="byteGrid">
+        <!-- filled by JS -->
+      </div>
+      <div class="btn-group">
+        <button class="btn" id="runRoundBtn">▶ Run one AES round</button>
+        <button class="btn" id="resetRoundBtn">↻ Reset state</button>
+      </div>
+      <div
+        id="roundLog"
+        style="
+          font-family: &quot;Fira Code&quot;, monospace;
+          font-size: 0.85rem;
+          color: #9ac8ff;
+          margin-top: 0.8rem;
+          min-height: 2rem;
+        "
+      >
+        Ready. Click "Run one AES round" to see the state change.
+      </div>
+
+      <h3>How does AES fit into our project?</h3>
+      <div class="diagram" style="white-space: pre">
+        Plaintext (file bytes) ↓ Split into 128-bit blocks ↓ AES-256-GCM
+        encryption ┌─────────────────────────┐ │ Round 1: SubBytes │ │ ShiftRows
+        │ │ MixColumns │ │ AddRoundKey │ │ ... repeat 14 times ...│ │ Round 14:
+        SubBytes │ │ ShiftRows │ │ AddRoundKey │ └─────────────────────────┘ ↓
+        Ciphertext + Authentication Tag
+      </div>
+      <p>
+        <strong>What if we removed AES?</strong> There would be no
+        confidentiality — anyone could read the file. AES is the core encryption
+        engine of the project. GCM mode wraps around AES to add authentication.
+      </p>
+      <p class="small-note">
+        Simplified explanation: real AES uses complex S-Box tables and Galois
+        field multiplication. This visualization captures the spirit, not the
+        exact math.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 9 : AUTH TAG ========== -->
+    <section class="glass">
+      <h2>9 · Authentication tag</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 2rem">
+        <div style="flex: 1">
+          <div class="diagram" style="white-space: pre">
+            Original encrypted data ↓ Authentication Tag ↓ Valid ✅
+          </div>
+        </div>
+        <div style="flex: 1">
+          <div class="diagram" style="white-space: pre">
+            Modified encrypted data ↓ Authentication verification ↓ FAILED ❌
+          </div>
+        </div>
+      </div>
+      <p>
+        Think of the authentication tag as a tamper-evident seal. If any byte
+        changes, the tag verification fails and decryption is rejected.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 10 : REAL EXAMPLE SIMULATION ========== -->
+    <section class="glass">
+      <h2>10 · Complete real example (fictional demo)</h2>
+      <p>
+        Click each step to walk through an encryption run using
+        <span class="inline-code">hello.txt</span> (content "Hello World") and
+        password <span class="inline-code">MySecret123</span>.
+      </p>
+      <div id="exampleWalkthrough"></div>
+    </section>
+
+    <!-- ========== SECTION 11 : DECRYPTION RUN ========== -->
+    <section class="glass">
+      <h2>11 · Complete decryption run</h2>
+      <div class="diagram" style="white-space: pre; font-size: 0.85rem">
+        hello.txt.enc ↓ Read JSON ↓ Extract Salt ↓ Extract Nonce ↓ Enter
+        Password ↓ PBKDF2 ↓ Same Derived Key ↓ AES-256-GCM Verification ↓
+        Authentication OK ↓ Decrypt ↓ "Hello World" ↓ hello.txt
+      </div>
+      <p style="margin-top: 1rem">
+        Decryption only works if the password is correct AND the file hasn't
+        been modified. Otherwise GCM authentication fails.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 12 : WRONG PASSWORD ========== -->
+    <section class="glass">
+      <h2>12 · Wrong password</h2>
+      <div class="diagram" style="white-space: pre">
+        Encrypted File + Wrong Password ↓ PBKDF2 ↓ Wrong Key ↓ AES-GCM
+        Authentication ↓ FAILED ❌
+      </div>
+      <p>
+        The derived key is different, so the authentication tag doesn't match.
+        The application refuses to decrypt.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 13 : TAMPERING INTERACTIVE ========== -->
+    <section class="glass">
+      <h2>13 · Tampering attack (interactive)</h2>
+      <div class="tamper-demo">
+        <div class="cipher-display" id="tamperCipher">A8F39D7B21C4E6...</div>
+        <div>
+          <button class="btn" id="tamperBtn">⚠️ Tamper With Ciphertext</button>
+          <button class="btn" id="resetTamper">↻ Reset</button>
+        </div>
+        <div id="tamperVerdict" class="verdict success">🔒 INTEGRITY OK</div>
+      </div>
+      <p style="margin-top: 1rem">
+        Changing even one character causes AES-GCM authentication to fail —
+        decryption is rejected. This is a critical security feature.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 14 : .ENC FILE STRUCTURE ========== -->
+    <section class="glass">
+      <h2>14 · What is inside the .enc file?</h2>
+      <div class="code-block" style="position: relative" id="jsonPreview">
+        { "<span class="json-field" data-field="version">version</span>": 1,
+        "<span class="json-field" data-field="algorithm">algorithm</span>":
+        "AES-256-GCM", "<span class="json-field" data-field="kdf">kdf</span>":
+        "PBKDF2-HMAC-SHA256", "<span class="json-field" data-field="iterations"
+          >iterations</span
+        >": 600000, "<span class="json-field" data-field="salt">salt</span>":
+        "3q2+7w==", "<span class="json-field" data-field="nonce">nonce</span>":
+        "9f8e7d6c5b4a3210", "<span
+          class="json-field"
+          data-field="original_filename"
+          >original_filename</span
+        >": "hello.txt", "<span class="json-field" data-field="mime_type"
+          >mime_type</span
+        >": "text/plain", "<span class="json-field" data-field="ciphertext"
+          >ciphertext</span
+        >": "k8d9f8e7d6c5b4a3210..." }
+      </div>
+      <div id="fieldExplain" class="field-explanation">
+        👆 Click any field above to see its explanation.
+      </div>
+      <p class="small-note">
+        Salt and nonce are stored in plaintext — that's safe. Base64 is used to
+        represent binary data as text inside JSON.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 15 : BASE64 ========== -->
+    <section class="glass">
+      <h2>15 · Why Base64?</h2>
+      <div class="diagram" style="white-space: pre">
+        Binary Data ↓ Base64 ↓ Text representation
+      </div>
+      <p>
+        <strong>Base64 is NOT encryption.</strong> It just encodes bytes into
+        printable characters (A–Z, a–z, 0–9, +, /). JSON cannot hold raw binary,
+        so we use Base64 to store ciphertext, salt, nonce, and tag.
+      </p>
+      <p>
+        Example: bytes <span class="inline-code">[0x48, 0x65, 0x6c]</span> →
+        Base64 <span class="inline-code">"SGVs"</span>
+      </p>
+    </section>
+
+    <!-- ========== SECTION 16 : BROWSER → FLASK ========== -->
+    <section class="glass">
+      <h2>16 · Browser → Flask → Crypto</h2>
+      <div class="diagram" style="white-space: pre; font-size: 0.8rem">
+        Browser HTML + CSS + JavaScript │ │ POST /api/encrypt ▼ Flask app.py │ ▼
+        crypto.py │ ▼ PBKDF2 + AES-GCM │ ▼ Flask JSON Response │ ▼ Browser GUI
+      </div>
+      <p>
+        Similarly, <span class="inline-code">/api/decrypt</span> receives the
+        .enc file and password, runs verification, and returns the original
+        file.
+      </p>
+    </section>
+
+    <!-- ========== SECTION 17 : PROJECT FILES ========== -->
+    <section class="glass">
+      <h2>17 · Actual project files</h2>
+      <ul style="list-style: none; padding-left: 0">
+        <li style="margin-bottom: 1rem">
+          <span class="inline-code">app.py</span> – Flask routes, receives
+          uploads, returns JSON.
+        </li>
+        <li style="margin-bottom: 1rem">
+          <span class="inline-code">encryption/crypto.py</span> – all
+          cryptography: PBKDF2, AES-GCM, packaging.
+        </li>
+        <li style="margin-bottom: 1rem">
+          <span class="inline-code">templates/index.html</span> – the GUI
+          structure.
+        </li>
+        <li style="margin-bottom: 1rem">
+          <span class="inline-code">static/style.css</span> – styling of the
+          interface.
+        </li>
+        <li style="margin-bottom: 1rem">
+          <span class="inline-code">static/script.js</span> – handles form
+          submission, AJAX, and display.
+        </li>
+      </ul>
+    </section>
+
+    <!-- ========== SECTION 18 : SECURITY MODEL ========== -->
+    <section class="glass">
+      <h2>18 · Security model</h2>
+      <table class="sec-table">
+        <tr>
+          <th>Feature</th>
+          <th>Protection</th>
+        </tr>
+        <tr>
+          <td>AES-256-GCM</td>
+          <td>Confidentiality</td>
+        </tr>
+        <tr>
+          <td>GCM authentication</td>
+          <td>Integrity</td>
+        </tr>
+        <tr>
+          <td>PBKDF2</td>
+          <td>Password-based key derivation</td>
+        </tr>
+        <tr>
+          <td>Salt</td>
+          <td>Prevents identical password derivations</td>
+        </tr>
+        <tr>
+          <td>Nonce</td>
+          <td>Required for safe GCM operation</td>
+        </tr>
+        <tr>
+          <td>Authentication Tag</td>
+          <td>Detects modification</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- ========== SECTION 19 : LIMITATIONS ========== -->
+    <section class="glass">
+      <h2>19 · What the project does NOT do</h2>
+      <ul style="padding-left: 1.6rem; color: #b8d0ea">
+        <li>
+          No user accounts or login (authentication = cryptographic integrity).
+        </li>
+        <li>No password recovery – forget it, lose data.</li>
+        <li>Does not store keys permanently.</li>
+        <li>Security depends on password strength.</li>
+        <li>Primarily a demonstration/educational tool.</li>
+      </ul>
+    </section>
+
+    <!-- ========== SECTION 20 : VIVA ========== -->
+    <section class="glass">
+      <h2>20 · Viva preparation (25 Q&A)</h2>
+      <div id="vivaContainer"></div>
+    </section>
+
+    <!-- ========== SECTION 21 : GLOSSARY ========== -->
+    <section class="glass">
+      <h2>21 · Interactive glossary</h2>
+      <div id="glossaryContainer"></div>
+    </section>
+
+    <!-- BACK TO TOP -->
+    <button class="back-top" id="backTop">↑ Back to top</button>
+
+    <script>
+      (function () {
+        // ---------- PROGRESS BAR ----------
+        window.addEventListener("scroll", function () {
+          const h = document.documentElement;
+          const scrollTop = h.scrollTop || document.body.scrollTop;
+          const scrollHeight = h.scrollHeight - h.clientHeight;
+          const percent = (scrollTop / scrollHeight) * 100;
+          document.getElementById("progressBar").style.width = percent + "%";
+        });
+
+        document
+          .getElementById("backTop")
+          .addEventListener("click", () =>
+            window.scrollTo({ top: 0, behavior: "smooth" }),
+          );
+
+        // ---------- SECTION 4 : STEP SIMULATOR ----------
+        const steps = [
+          {
+            text: '📄 <strong>Step 1:</strong> User selects a file <span class="inline-code">example.txt</span>',
+            desc: "The file is read as bytes.",
+          },
+          {
+            text: '🔑 <strong>Step 2:</strong> User enters password <span class="inline-code">MySecret123</span>',
+            desc: "Password is used only for key derivation.",
+          },
+          {
+            text: '🧂 <strong>Step 3:</strong> Generate random 16-byte salt (e.g. <span class="inline-code">3q2+7w==</span>)',
+            desc: "Salt is stored with ciphertext.",
+          },
+          {
+            text: "⛏️ <strong>Step 4:</strong> PBKDF2-HMAC-SHA256 with 600,000 iterations → 256-bit key",
+            desc: "Password + salt → derived key.",
+          },
+          {
+            text: '🎲 <strong>Step 5:</strong> Generate random 12-byte nonce (e.g. <span class="inline-code">9f8e7d6c5b4a3210</span>)',
+            desc: "Unique per encryption.",
+          },
+          {
+            text: "🔐 <strong>Step 6:</strong> AES-256-GCM encrypts plaintext with key + nonce",
+            desc: "Produces ciphertext and auth tag.",
+          },
+          {
+            text: "✅ <strong>Step 7:</strong> Ciphertext + Authentication Tag",
+            desc: "Tag verifies integrity later.",
+          },
+          {
+            text: "📦 <strong>Step 8:</strong> Create JSON package with fields (version, salt, nonce, ciphertext, etc.)",
+            desc: "Structured, portable format.",
+          },
+          {
+            text: '💾 <strong>Step 9:</strong> User downloads <span class="inline-code">example.txt.enc</span>',
+            desc: "Encrypted file ready to store/share.",
+          },
+        ];
+
+        let currentStep = 0;
+        const stepContent = document.getElementById("stepContent");
+        const dotsContainer = document.getElementById("stepDots");
+
+        function renderDots() {
+          dotsContainer.innerHTML = steps
+            .map(
+              (_, i) =>
+                `<div class="step-dot ${i === currentStep ? "active" : ""}">${i + 1}</div>`,
+            )
+            .join("");
+        }
+
+        function renderStep() {
+          const s = steps[currentStep];
+          stepContent.innerHTML = `
+        <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">${s.text}</div>
+        <div style="color: #9bbce6; font-size: 0.95rem; margin-top: 0.8rem;">${s.desc}</div>
+      `;
+          renderDots();
+        }
+
+        document.getElementById("nextStep").addEventListener("click", () => {
+          if (currentStep < steps.length - 1) {
+            currentStep++;
+            renderStep();
+          }
+        });
+        document.getElementById("prevStep").addEventListener("click", () => {
+          if (currentStep > 0) {
+            currentStep--;
+            renderStep();
+          }
+        });
+        document.getElementById("resetSteps").addEventListener("click", () => {
+          currentStep = 0;
+          renderStep();
+        });
+        let playInterval = null;
+        document.getElementById("playSteps").addEventListener("click", () => {
+          if (playInterval) {
+            clearInterval(playInterval);
+            playInterval = null;
+            return;
+          }
+          playInterval = setInterval(() => {
+            if (currentStep < steps.length - 1) {
+              currentStep++;
+              renderStep();
+            } else {
+              clearInterval(playInterval);
+              playInterval = null;
+            }
+          }, 1400);
+        });
+
+        renderStep();
+
+        // ---------- SECTION 5 : PBKDF2 ITERATION DEMO ----------
+        document
+          .getElementById("startIterDemo")
+          .addEventListener("click", function () {
+            let count = 1;
+            const maxDisplay = 600000;
+            const counterEl = document.getElementById("iterationCounter");
+            const barEl = document.getElementById("iterationBar");
+            barEl.style.width = "0%";
+            const interval = setInterval(() => {
+              count = Math.min(count * 1.4, maxDisplay);
+              counterEl.innerText = Math.floor(count).toLocaleString();
+              barEl.style.width = (count / maxDisplay) * 100 + "%";
+              if (count >= maxDisplay) {
+                clearInterval(interval);
+                counterEl.innerText = "600,000";
+                barEl.style.width = "100%";
+              }
+            }, 40);
+          });
+
+        // ---------- SECTION 8.5 : AES ROUND VISUALIZATION ----------
+        const initialBytes = [
+          "0x19",
+          "0x3d",
+          "0xe3",
+          "0xbe",
+          "0xa0",
+          "0xf4",
+          "0xe2",
+          "0x2b",
+          "0x9a",
+          "0xc6",
+          "0x8d",
+          "0x2a",
+          "0xe9",
+          "0xf8",
+          "0x48",
+          "0x08",
+        ];
+        let currentBytes = [...initialBytes];
+        let roundCount = 0;
+
+        function renderByteGrid() {
+          const grid = document.getElementById("byteGrid");
+          grid.innerHTML = currentBytes
+            .map(
+              (b, i) =>
+                `<div class="byte-cell" style="transition: all 0.4s;" id="byte-${i}">${b}</div>`,
+            )
+            .join("");
+        }
+
+        function runAesRound() {
+          roundCount++;
+          // Simplified visual: rotate each row, shift columns, mix a bit (fake)
+          let newBytes = [...currentBytes];
+          // Shift rows: row 1 left by 1, row 2 left by 2, row 3 left by 3 (simplified)
+          // Actually just do a visual shuffle to simulate diffusion
+          for (let i = 0; i < 16; i++) {
+            // simple fake transformation: XOR with a constant and rotate
+            let val = parseInt(newBytes[i], 16);
+            val = (val ^ 0x1f) & 0xff;
+            // rotate bits
+            val = ((val << 3) | (val >> 5)) & 0xff;
+            newBytes[i] = "0x" + val.toString(16).padStart(2, "0");
+          }
+          // Shift array elements to simulate ShiftRows
+          [newBytes[1], newBytes[5], newBytes[9], newBytes[13]] = [
+            newBytes[5],
+            newBytes[9],
+            newBytes[13],
+            newBytes[1],
+          ];
+          [newBytes[2], newBytes[6], newBytes[10], newBytes[14]] = [
+            newBytes[10],
+            newBytes[14],
+            newBytes[2],
+            newBytes[6],
+          ];
+          [newBytes[3], newBytes[7], newBytes[11], newBytes[15]] = [
+            newBytes[15],
+            newBytes[3],
+            newBytes[7],
+            newBytes[11],
+          ];
+
+          currentBytes = newBytes;
+          renderByteGrid();
+
+          // highlight round boxes sequentially
+          const boxes = document.querySelectorAll(
+            "#aesRoundContainer .round-box",
+          );
+          boxes.forEach((b) => b.classList.remove("active"));
+          let idx = 0;
+          const highlightInterval = setInterval(() => {
+            if (idx < boxes.length) {
+              boxes[idx].classList.add("active");
+              idx++;
+            } else {
+              clearInterval(highlightInterval);
+              setTimeout(
+                () => boxes.forEach((b) => b.classList.remove("active")),
+                400,
+              );
+            }
+          }, 150);
+
+          document.getElementById("roundLog").innerText =
+            `🔁 AES round ${roundCount} applied: SubBytes → ShiftRows → MixColumns → AddRoundKey (simplified visual)`;
+        }
+
+        document
+          .getElementById("runRoundBtn")
+          .addEventListener("click", runAesRound);
+        document
+          .getElementById("resetRoundBtn")
+          .addEventListener("click", () => {
+            currentBytes = [...initialBytes];
+            roundCount = 0;
+            renderByteGrid();
+            document.getElementById("roundLog").innerText =
+              'Ready. Click "Run one AES round" to see the state change.';
+            document
+              .querySelectorAll("#aesRoundContainer .round-box")
+              .forEach((b) => b.classList.remove("active"));
+          });
+
+        renderByteGrid();
+
+        // ---------- SECTION 10 : EXAMPLE WALKTHROUGH ----------
+        const walkthroughSteps = [
+          { label: "📄 hello.txt", content: '"Hello World"' },
+          { label: "🔑 password", content: "MySecret123" },
+          { label: "🧂 salt (random)", content: "3q2+7w==" },
+          { label: "⛏️ PBKDF2", content: "→ 256-bit key" },
+          { label: "🎲 nonce (random)", content: "9f8e7d6c5b4a3210" },
+          { label: "🔐 AES-256-GCM", content: "ciphertext + auth tag" },
+          { label: "📦 JSON", content: "{ version, salt, nonce, ... }" },
+          { label: "💾 hello.txt.enc", content: "ready to download" },
+        ];
+
+        const walkthroughDiv = document.getElementById("exampleWalkthrough");
+        walkthroughSteps.forEach((s, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "btn";
+          btn.style.margin = "0.3rem";
+          btn.innerText = s.label;
+          btn.addEventListener("click", () => {
+            alert(`Step ${idx + 1}: ${s.label}\n${s.content}`);
+          });
+          walkthroughDiv.appendChild(btn);
+        });
+
+        // ---------- SECTION 13 : TAMPER DEMO ----------
+        let tampered = false;
+        const tamperCipher = document.getElementById("tamperCipher");
+        const tamperVerdict = document.getElementById("tamperVerdict");
+        const originalCipher = "A8F39D7B21C4E6...";
+        const tamperedCipher = "A8F39X7B21C4E6...";
+
+        document.getElementById("tamperBtn").addEventListener("click", () => {
+          tampered = true;
+          tamperCipher.innerText = tamperedCipher;
+          tamperVerdict.className = "verdict fail";
+          tamperVerdict.innerText = "❌ AUTHENTICATION FAILED — DATA CORRUPTED";
+        });
+        document.getElementById("resetTamper").addEventListener("click", () => {
+          tampered = false;
+          tamperCipher.innerText = originalCipher;
+          tamperVerdict.className = "verdict success";
+          tamperVerdict.innerText = "🔒 INTEGRITY OK";
+        });
+
+        // ---------- SECTION 14 : JSON FIELD CLICK ----------
+        const explanations = {
+          version: "Schema version. Helps with future compatibility.",
+          algorithm: "Encryption algorithm used — here AES-256-GCM.",
+          kdf: "Key derivation function — PBKDF2-HMAC-SHA256.",
+          iterations: "Number of PBKDF2 iterations (600,000).",
+          salt: "Random salt for PBKDF2. Not secret, stored with ciphertext.",
+          nonce: "Unique 12-byte nonce for AES-GCM. Not secret.",
+          original_filename:
+            "Original filename so it can be restored after decryption.",
+          mime_type: "Original file type (e.g. text/plain).",
+          ciphertext: "Encrypted file content, Base64 encoded.",
+        };
+
+        document.querySelectorAll(".json-field").forEach((el) => {
+          el.addEventListener("click", () => {
+            const field = el.dataset.field;
+            document.getElementById("fieldExplain").innerHTML =
+              `<strong>${field}</strong> → ${explanations[field]}`;
+          });
+        });
+
+        // ---------- SECTION 20 : VIVA (25 Q&A) ----------
+        const vivaQuestions = [
+          {
+            q: "What is AES?",
+            a: "AES (Advanced Encryption Standard) is a symmetric block cipher used worldwide to encrypt data.",
+          },
+          {
+            q: "Why AES-256?",
+            a: "256-bit key is computationally infeasible to brute-force with current technology.",
+          },
+          {
+            q: "What is GCM?",
+            a: "Galois/Counter Mode, a mode of operation for AES that provides authenticated encryption.",
+          },
+          {
+            q: "Why use AES-GCM?",
+            a: "It provides both confidentiality and integrity (authentication) in one step.",
+          },
+          {
+            q: "What is authenticated encryption?",
+            a: "Encryption that also verifies data hasn’t been tampered with (integrity + authenticity).",
+          },
+          {
+            q: "What is PBKDF2?",
+            a: "Password-Based Key Derivation Function 2 — derives a cryptographic key from a password and salt.",
+          },
+          {
+            q: "Why use PBKDF2?",
+            a: "To make brute-force attacks slower by applying many iterations.",
+          },
+          {
+            q: "What is a salt?",
+            a: "Random data added to a password before hashing/deriving, so identical passwords produce different keys.",
+          },
+          {
+            q: "Why is salt not secret?",
+            a: "Salt only prevents precomputed attacks; it can be public without weakening security.",
+          },
+          {
+            q: "What is a nonce?",
+            a: "A number used once — must be unique per encryption with the same key.",
+          },
+          {
+            q: "Why is nonce important?",
+            a: "Reusing a nonce with the same key in GCM breaks confidentiality and integrity.",
+          },
+          {
+            q: "What happens if nonce is reused?",
+            a: "It can leak XOR of plaintexts and allow forgery of authentication tags.",
+          },
+          {
+            q: "What is ciphertext?",
+            a: "The encrypted, unreadable output of encryption.",
+          },
+          {
+            q: "What is plaintext?",
+            a: "Original, readable data before encryption.",
+          },
+          {
+            q: "What is an authentication tag?",
+            a: "A short piece of data produced by GCM to verify integrity and authenticity.",
+          },
+          {
+            q: "How does tampering detection work?",
+            a: "GCM recomputes the tag; if it doesn’t match, decryption is rejected.",
+          },
+          {
+            q: "What happens with the wrong password?",
+            a: "PBKDF2 derives a different key, so authentication fails and decryption is rejected.",
+          },
+          {
+            q: "Why not use SHA-256(password) directly?",
+            a: "SHA-256 is too fast; PBKDF2 with iterations makes brute-force expensive.",
+          },
+          {
+            q: "Why are 600,000 PBKDF2 iterations used?",
+            a: "High iteration count increases the cost of brute-force attacks.",
+          },
+          {
+            q: "What is Base64?",
+            a: "A binary-to-text encoding that represents bytes using 64 printable characters.",
+          },
+          {
+            q: "Is Base64 encryption?",
+            a: "No, Base64 is just encoding, not encryption — it provides no secrecy.",
+          },
+          {
+            q: "Why is JSON used?",
+            a: "JSON is a structured, portable format for storing all encryption parameters.",
+          },
+          {
+            q: "What is Flask doing?",
+            a: "Flask handles HTTP requests, calls crypto functions, and returns JSON responses.",
+          },
+          {
+            q: "Why does the project need JavaScript?",
+            a: "JavaScript manages the UI, file selection, and AJAX requests to Flask.",
+          },
+          {
+            q: "What is the difference between encryption and authentication?",
+            a: "Encryption hides data; authentication proves it hasn’t been altered.",
+          },
+        ];
+
+        const vivaContainer = document.getElementById("vivaContainer");
+        vivaQuestions.forEach((item, i) => {
+          const div = document.createElement("div");
+          div.className = "expand-item";
+          div.innerHTML = `
+        <div class="expand-question" data-index="${i}">
+          <span>${i + 1}. ${item.q}</span>
+          <span style="color: #5f8fd0;">▼</span>
+        </div>
+        <div class="expand-answer" id="viva-ans-${i}">${item.a}</div>
+      `;
+          vivaContainer.appendChild(div);
+        });
+
+        // ---------- GLOSSARY ----------
+        const glossaryTerms = [
+          { term: "Plaintext", def: "Original readable data." },
+          { term: "Ciphertext", def: "Encrypted unreadable data." },
+          {
+            term: "Encryption",
+            def: "Process of converting plaintext to ciphertext.",
+          },
+          {
+            term: "Decryption",
+            def: "Converting ciphertext back to plaintext.",
+          },
+          { term: "Key", def: "Secret value used to encrypt/decrypt." },
+          {
+            term: "Password",
+            def: "Human-memorable secret used to derive a key.",
+          },
+          {
+            term: "KDF",
+            def: "Key Derivation Function — derives a key from a password.",
+          },
+          {
+            term: "PBKDF2",
+            def: "Password-Based Key Derivation Function 2, with iterations.",
+          },
+          { term: "HMAC", def: "Keyed-hash message authentication code." },
+          {
+            term: "SHA-256",
+            def: "Secure Hash Algorithm producing 256-bit digest.",
+          },
+          {
+            term: "AES",
+            def: "Advanced Encryption Standard, symmetric block cipher.",
+          },
+          { term: "AES-256", def: "AES with 256-bit key." },
+          {
+            term: "GCM",
+            def: "Galois/Counter Mode — authenticated encryption mode.",
+          },
+          {
+            term: "Salt",
+            def: "Random data added to password before derivation.",
+          },
+          { term: "Nonce", def: "Number used once, unique per encryption." },
+          {
+            term: "Authentication Tag",
+            def: "GCM output used for integrity verification.",
+          },
+          { term: "Integrity", def: "Assurance data hasn’t been altered." },
+          {
+            term: "Confidentiality",
+            def: "Assurance data is only readable by intended parties.",
+          },
+          {
+            term: "Authenticated Encryption",
+            def: "Encryption that also provides integrity.",
+          },
+          { term: "Base64", def: "Binary-to-text encoding." },
+          {
+            term: "JSON",
+            def: "JavaScript Object Notation — structured data format.",
+          },
+          { term: "Flask", def: "Python micro web framework." },
+          {
+            term: "API",
+            def: "Application Programming Interface — endpoints for communication.",
+          },
+        ];
+
+        const glossaryContainer = document.getElementById("glossaryContainer");
+        glossaryTerms.forEach((item, i) => {
+          const div = document.createElement("div");
+          div.className = "expand-item";
+          div.innerHTML = `
+        <div class="expand-question" data-gloss="${i}">
+          <span>${item.term}</span>
+          <span style="color: #5f8fd0;">▼</span>
+        </div>
+        <div class="expand-answer" id="gloss-ans-${i}">${item.def}</div>
+      `;
+          glossaryContainer.appendChild(div);
+        });
+
+        // Expand/collapse for both viva and glossary
+        document.addEventListener("click", (e) => {
+          const q = e.target.closest(".expand-question");
+          if (!q) return;
+          const parent = q.parentElement;
+          const answer = parent.querySelector(".expand-answer");
+          if (!answer) return;
+          answer.classList.toggle("show");
+        });
+      })();
+    </script>
+  </body>
+</html>
